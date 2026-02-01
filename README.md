@@ -4,4 +4,3 @@
 <!-- ![GitHub账户最常用语言](https://github-stats.ubrong.com/api/top-langs/?username=Redstone0921&layout=compact&theme=tokyonight) -->
 ![GitHub仓库信息卡片](https://github-stats.ubrong.com/api/pin/?username=Cute-Dress&repo=Dress&theme=dark)
 </div>
-![Visitor Count](https://profile-counter.glitch.me/{Redstone0921}/count.svg)
