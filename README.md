@@ -1,6 +1,6 @@
 <!-- <div id="img" align="center"> -->
 <p align="right">Interesting picture:</p>
-<img src="image/coder.webp" align="right" width="368" />
+<img src="image/coder.webp" align="right" width="350" />
 
 <h3># Hi there, I'm Redstone0921</h3>
 
