@@ -8,7 +8,7 @@
 - ✨ Exploring more possibilities where technology meets creativity
 
 <h3 align="right">My Growth:</h3>
-<img src="image/coder.webp" align="right" width="250" />
+<img src="image/coder.webp" align="right" width="220" />
 
 ![GitHub账户信息统计](https://github-stats.ubrong.com/api?username=Redstone0921&show_icons=true&theme=tokyonight)
 
