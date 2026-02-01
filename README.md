@@ -1,7 +1,4 @@
 <!-- <div id="img" align="center"> -->
-<p align="right">Interesting picture:</p>
-<img src="image/coder.webp" align="right" width="350" />
-
 <h3># Hi there, I'm Redstone0921</h3>
 
 - ✨I'm a little Femboy who studies computer science 
@@ -9,7 +6,9 @@
 - ✨ Love gaming — often play Peacekeeper Elite, Arknights: Endfield, Asphalt 9, Valorant, and R.E.P.O
 - ✨ Outgoing and always happy to connect with like‑minded friends
 - ✨ Exploring more possibilities where technology meets creativity
-<h3>My stats：</h3>
+
+<h3 align="right">My Growth:</h3>
+<img src="image/coder.webp" align="right" width="250" />
 
 ![GitHub账户信息统计](https://github-stats.ubrong.com/api?username=Redstone0921&show_icons=true&theme=tokyonight)
 
