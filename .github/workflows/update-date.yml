@@ -64,9 +64,12 @@ jobs:
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           
+          # 获取日期和时间（简洁版）
           UPDATED_DATE=$(date -u '+%B %-d, %Y')
+          UPDATE_TIME=$(date -u '+%H:%M UTC')
+          
           git add README.md
-          git commit -m "📅 Auto-update: $UPDATED_DATE"
+          git commit -m "📅 $UPDATED_DATE at $UPDATE_TIME"
           
           echo "🚀 Pushing changes..."
           git push
