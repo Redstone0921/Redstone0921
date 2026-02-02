@@ -1,60 +1,38 @@
 const fs = require('fs');
 const path = require('path');
 
-// 获取 README.md 的路径
 const readmePath = path.join(process.cwd(), 'README.md');
-console.log('📁 README path:', readmePath);
 
 try {
-  // 读取 README 内容
   let readmeContent = fs.readFileSync(readmePath, 'utf8');
-  console.log('📄 README loaded, length:', readmeContent.length, 'chars');
   
-  // 获取当前日期（UTC）
+  // 获取当前UTC日期
   const now = new Date();
-  const formattedDate = now.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  });
+  const months = ['January', 'February', 'March', 'April', 'May', 'June', 
+                  'July', 'August', 'September', 'October', 'November', 'December'];
+  const formattedDate = `${months[now.getUTCMonth()]} ${now.getUTCDate()}, ${now.getUTCFullYear()}`;
   
-  console.log('📅 Current UTC date:', formattedDate);
-  console.log('🕐 Full date:', now.toISOString());
+  console.log('📅 Formatted UTC date:', formattedDate);
+  console.log('🕐 UTC time:', now.toISOString());
   
-  // 你的实际格式：🔥 Today is **February 2, 2026**. I'm still alive. Nice to meet you!
+  // 查找并替换
   const targetPattern = /🔥 Today is \*\*.*?\*\*\. I'm still alive\. Nice to meet you!/;
   const newLine = `🔥 Today is **${formattedDate}**. I'm still alive. Nice to meet you!`;
   
   if (targetPattern.test(readmeContent)) {
-    // 使用正则替换
     const updatedContent = readmeContent.replace(targetPattern, newLine);
     
     if (updatedContent !== readmeContent) {
       fs.writeFileSync(readmePath, updatedContent, 'utf8');
-      console.log('✅ README updated successfully!');
-      console.log('🔄 Changed line to:', newLine);
+      console.log('✅ README updated! Date changed to:', formattedDate);
     } else {
-      console.log('⚠️  No changes needed (date already correct?)');
+      console.log('⚠️  Date already correct:', formattedDate);
     }
   } else {
-    console.log('❌ Target pattern not found in README');
-    console.log('🔍 Looking for pattern:', targetPattern.toString());
-    
-    // 尝试更宽松的匹配
-    const lines = readmeContent.split('\n');
-    for (let i = 0; i < lines.length; i++) {
-      if (lines[i].includes('Today is') && lines[i].includes('I\'m still alive')) {
-        console.log(`📍 Found matching line at ${i}: "${lines[i]}"`);
-        lines[i] = newLine;
-        const updatedContent = lines.join('\n');
-        fs.writeFileSync(readmePath, updatedContent, 'utf8');
-        console.log('✅ README updated (fallback method)');
-        break;
-      }
-    }
+    console.log('❌ Pattern not found!');
   }
   
 } catch (error) {
-  console.error('❌ Error updating README:', error);
+  console.error('❌ Error:', error);
   process.exit(1);
 }
