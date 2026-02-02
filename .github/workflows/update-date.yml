@@ -1,0 +1,54 @@
+name: Update Date in README
+
+on:
+  schedule:
+    # 每天UTC时间0点运行（北京时间8点）
+    - cron: '0 0 * * *'
+  # 允许手动触发
+  workflow_dispatch:
+  # 推送代码时也运行（可选）
+  push:
+    branches: [ main, master ]
+
+permissions:
+  contents: write  # 必需：允许Action推送代码
+
+jobs:
+  update-date:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          # 必需：获取完整历史记录以便推送
+          fetch-depth: 0
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      
+      - name: Update date in README
+        run: |
+          # 确保脚本有执行权限
+          chmod +x .github/scripts/update-date.js
+          # 运行更新脚本
+          node .github/scripts/update-date.js
+      
+      - name: Check for changes
+        id: git-check
+        run: |
+          git diff --quiet README.md || echo "has_changes=true" >> $GITHUB_OUTPUT
+      
+      - name: Commit and push changes
+        if: steps.git-check.outputs.has_changes == 'true'
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add README.md
+          git commit -m "📅 Auto-update: Update date to $(date '+%B %-d, %Y')"
+          git push
+        env:
+          # 使用 GitHub Token 进行推送
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
