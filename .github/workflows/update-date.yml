@@ -2,19 +2,18 @@ name: Update Date in README
 
 on:
   schedule:
-    # 每天UTC时间0点运行（北京时间早上8点）
-    # 每天更新一次日期
+    # 每天 UTC 时间 0:00 运行（北京时间 8:00）
     - cron: '0 0 * * *'
   
-  # 允许手动触发（在GitHub网页上点击运行）
+  # 允许手动触发
   workflow_dispatch:
   
-  # 推送代码时也运行（可选，用于测试）
+  # 推送时也运行（用于测试）
   push:
     branches: [ main, master ]
 
 permissions:
-  contents: write  # 必需：允许Action推送代码到仓库
+  contents: write
 
 jobs:
   update-date:
@@ -24,32 +23,40 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          # 获取完整历史记录以便推送
           fetch-depth: 0
-          # 使用具有写入权限的token
           token: ${{ secrets.GITHUB_TOKEN }}
       
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-          cache: 'npm'
+      
+      - name: Debug info
+        run: |
+          echo "🕐 Workflow started at: $(date -u '+%Y-%m-%d %H:%M:%S') UTC"
+          echo "🇨🇳 Beijing time: $(date -u '+%Y-%m-%d %H:%M:%S' -d '+8 hours')"
+          echo "📁 Current directory: $(pwd)"
+          echo "📄 Files in directory:"
+          ls -la
+          echo "📄 README.md preview:"
+          head -20 README.md
       
       - name: Update date in README
         run: |
-          echo "🕐 Workflow triggered at: $(date -u)"
-          echo "📅 UTC time: $(date -u '+%Y-%m-%d %H:%M:%S')"
-          echo "🇨🇳 Beijing time: $(date -u '+%Y-%m-%d %H:%M:%S' -d '+8 hours')"
-          
-          # 运行更新脚本
+          echo "🔄 Running update script..."
           node .github/scripts/update-date.js
       
       - name: Check for changes
         id: git-check
         run: |
-          git diff --quiet README.md || echo "has_changes=true" >> $GITHUB_OUTPUT
-          echo "📝 Git status:"
-          git status --porcelain
+          if git diff --quiet README.md; then
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+            echo "📝 No changes detected"
+          else
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+            echo "📝 Changes detected:"
+            git diff README.md
+          fi
       
       - name: Commit and push changes
         if: steps.git-check.outputs.has_changes == 'true'
@@ -57,19 +64,18 @@ jobs:
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           
-          # 获取更新后的日期用于提交信息
           UPDATED_DATE=$(date -u '+%B %-d, %Y')
           git add README.md
-          git commit -m "📅 Auto-update: ${UPDATED_DATE}"
+          git commit -m "📅 Auto-update: $UPDATED_DATE"
           
-          echo "🚀 Pushing changes to repository..."
+          echo "🚀 Pushing changes..."
           git push
-          echo "✅ Changes pushed successfully!"
+          echo "✅ Done!"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
-      - name: No changes needed
+      - name: Skip if no changes
         if: steps.git-check.outputs.has_changes != 'true'
         run: |
-          echo "✅ README is already up-to-date. No changes needed."
-          echo "📅 Current date in repository is already correct."
+          echo "✅ README is already up-to-date"
+          echo "🎯 Date was already correct"
