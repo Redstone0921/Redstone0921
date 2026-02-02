@@ -1,6 +1,7 @@
 <!-- <div id="img" align="center"> -->
 <h3># Hi there, I'm Redstone_inf</h3>
-- Today is February 2, 2026. I'm still alive. Nice to meet you!
+
+- ✨Today is February 2, 2026. I'm still alive. Nice to meet you!
 - ✨I'm a little Femboy who studies computer science 
 - ✨Interested in front‑end development, game development & cybersecurity
 - ✨ Love gaming — often play Peacekeeper Elite, Arknights: Endfield, Asphalt 9, Valorant, and R.E.P.O
