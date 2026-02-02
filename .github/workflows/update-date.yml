@@ -2,16 +2,19 @@ name: Update Date in README
 
 on:
   schedule:
-    # 每天UTC时间0点运行（北京时间8点）
+    # 每天UTC时间0点运行（北京时间早上8点）
+    # 每天更新一次日期
     - cron: '0 0 * * *'
-  # 允许手动触发
+  
+  # 允许手动触发（在GitHub网页上点击运行）
   workflow_dispatch:
-  # 推送代码时也运行（可选）
+  
+  # 推送代码时也运行（可选，用于测试）
   push:
     branches: [ main, master ]
 
 permissions:
-  contents: write  # 必需：允许Action推送代码
+  contents: write  # 必需：允许Action推送代码到仓库
 
 jobs:
   update-date:
@@ -21,18 +24,23 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          # 必需：获取完整历史记录以便推送
+          # 获取完整历史记录以便推送
           fetch-depth: 0
+          # 使用具有写入权限的token
+          token: ${{ secrets.GITHUB_TOKEN }}
       
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
+          cache: 'npm'
       
       - name: Update date in README
         run: |
-          # 确保脚本有执行权限
-          chmod +x .github/scripts/update-date.js
+          echo "🕐 Workflow triggered at: $(date -u)"
+          echo "📅 UTC time: $(date -u '+%Y-%m-%d %H:%M:%S')"
+          echo "🇨🇳 Beijing time: $(date -u '+%Y-%m-%d %H:%M:%S' -d '+8 hours')"
+          
           # 运行更新脚本
           node .github/scripts/update-date.js
       
@@ -40,15 +48,28 @@ jobs:
         id: git-check
         run: |
           git diff --quiet README.md || echo "has_changes=true" >> $GITHUB_OUTPUT
+          echo "📝 Git status:"
+          git status --porcelain
       
       - name: Commit and push changes
         if: steps.git-check.outputs.has_changes == 'true'
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
+          
+          # 获取更新后的日期用于提交信息
+          UPDATED_DATE=$(date -u '+%B %-d, %Y')
           git add README.md
-          git commit -m "📅 Auto-update: Update date to $(date '+%B %-d, %Y')"
+          git commit -m "📅 Auto-update: ${UPDATED_DATE}"
+          
+          echo "🚀 Pushing changes to repository..."
           git push
+          echo "✅ Changes pushed successfully!"
         env:
-          # 使用 GitHub Token 进行推送
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: No changes needed
+        if: steps.git-check.outputs.has_changes != 'true'
+        run: |
+          echo "✅ README is already up-to-date. No changes needed."
+          echo "📅 Current date in repository is already correct."

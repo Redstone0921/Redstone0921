@@ -8,7 +8,7 @@ try {
   // 读取README内容
   let readmeContent = fs.readFileSync(readmePath, 'utf8');
   
-  // 获取当前日期
+  // 获取当前日期（使用UTC时间，与GitHub Actions保持一致）
   const now = new Date();
   const formattedDate = now.toLocaleDateString('en-US', {
     year: 'numeric',
@@ -16,20 +16,19 @@ try {
     day: 'numeric'
   });
   
-  console.log('Current date:', formattedDate);
-  console.log('Original README content preview:', readmeContent.substring(0, 200));
-  
-  // 使用更灵活的替换逻辑
-  // 方法A：替换整个句子（更稳定）
-  const newSentence = `🔥 Today is **${formattedDate}**. I'm still alive. Nice to meet you!`;
+  console.log('Current UTC date:', formattedDate);
+  console.log('Full date object:', now.toISOString());
   
   // 查找并替换包含"Today is"的行
   const lines = readmeContent.split('\n');
   let updated = false;
+  const newSentence = `- Today is **${formattedDate}**. I'm still alive. Nice to meet you!`;
   
   for (let i = 0; i < lines.length; i++) {
     if (lines[i].includes('Today is') && lines[i].includes('I\'m still alive')) {
-      console.log('Found target line at index', i, ':', lines[i]);
+      console.log(`Found target line at index ${i}: "${lines[i]}"`);
+      console.log(`Will replace with: "${newSentence}"`);
+      
       lines[i] = newSentence;
       updated = true;
       break;
@@ -40,28 +39,25 @@ try {
     readmeContent = lines.join('\n');
     // 写入更新后的内容
     fs.writeFileSync(readmePath, readmeContent, 'utf8');
-    console.log('README updated successfully!');
+    console.log('✅ README updated successfully!');
   } else {
-    console.log('Target line not found. Trying alternative replacement...');
-    
-    // 方法B：使用正则表达式替换
+    console.log('❌ Target line not found. Please check README.md format.');
+    // 尝试正则匹配作为备选方案
     const updatedContent = readmeContent.replace(
-      /🔥 Today is .*?I'm still alive\. Nice to meet you!/,
+      /- Today is \*\*.*?\*\*\. I'm still alive\. Nice to meet you!/,
       newSentence
     );
     
     if (updatedContent !== readmeContent) {
       fs.writeFileSync(readmePath, updatedContent, 'utf8');
-      console.log('README updated using regex!');
+      console.log('✅ README updated using regex fallback!');
     } else {
-      // 方法C：如果都没找到，添加新行
-      console.log('Adding new line...');
-      const updatedContent = readmeContent + '\n' + newSentence;
-      fs.writeFileSync(readmePath, updatedContent, 'utf8');
+      console.log('❌ No matching pattern found. README not updated.');
+      process.exit(1);
     }
   }
   
 } catch (error) {
-  console.error('Error updating README:', error);
+  console.error('❌ Error updating README:', error);
   process.exit(1);
 }
