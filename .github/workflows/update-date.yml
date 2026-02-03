@@ -2,8 +2,8 @@ name: Update Date in README
 
 on:
   schedule:
-    # 每天北京时间 1:10 运行（UTC 17:10）
-    - cron: '10 17 * * *'
+    # 每天北京时间 3:30 运行（UTC 17:10）
+    - cron: '30 19 * * *'
   
   # 允许手动触发
   workflow_dispatch:
